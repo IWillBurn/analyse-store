@@ -28,6 +28,19 @@ class Preprocessor:
 
         return items, datasets, results
 
+    def feature_engineering_lags_store(self,
+                                       items: list,
+                                       datasets: dict,
+                                       padding: int,
+                                       options: dict) -> (list, dict):
+        """
+        Применяет feature_engineering_lags для всех предметов из магазина.
+        """
+        for i in items:
+            datasets[i] = self.feature_engineering_lags(datasets[i], padding, options)
+
+        return items, datasets
+
     def feature_engineering(self,
                             data: pd.DataFrame,
                             calendar: pd.DataFrame,
@@ -67,6 +80,13 @@ class Preprocessor:
             event_type_codes.append(event_type_code)
             full_data[event_type_code] = np.where(
                 (full_data['event_type_1'] == event_type) | (full_data['event_type_2'] == event_type), 1, 0)
+
+        weekdays = set(full_data['weekday'].dropna().unique().tolist())
+        weekdays_codes = []
+        for weekday in weekdays:
+            weekday_code = 'WEEKDAY_' + str(weekday)
+            weekdays_codes.append(weekday_code)
+            full_data[weekday_code] = np.where(full_data['weekday'] == weekday, 1, 0)
 
         full_data = full_data.drop('event_name_1', axis=1)
         full_data = full_data.drop('event_name_2', axis=1)
@@ -124,6 +144,24 @@ class Preprocessor:
         feature_engineering_result['event_type_codes'] = event_type_codes
 
         return full_data, feature_engineering_result
+
+    def feature_engineering_lags(self,
+                                 data: pd.DataFrame,
+                                 padding: int,
+                                 options: dict) -> pd.DataFrame:
+        """
+        Добавляет фичи на основе предыдущих значений ряда (лаги и скользящие средние).
+        """
+        for i in range(options['lag_count']):
+            data[f'LAG_{i + 1}'] = data['cnt'].shift(padding + i + 1).fillna(0)
+
+        for i in range(options['seasonal_lag_count']):
+            data[f'LAG_SEASONAL_{i + 1}'] = data['cnt'].shift(padding + (i + 1) * options['seasonal_lag']).fillna(0)
+
+        for mean_size in options['mean_sizes']:
+            data[f'ROLLING_MEAN_{mean_size}_LAG'] = data['cnt'].shift(padding + 1).rolling(window=mean_size, min_periods=1).mean()
+
+        return data
 
     def feature_engineering_report(self, data: pd.DataFrame, result: dict) -> None:
         """
