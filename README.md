@@ -33,11 +33,11 @@
 ├── solution/                   # Решение  
 │├──  analyse/                      # Модуль с инструментами для анализа  
 │├──  models/                       # Модуль с моделями  
-││├──  catboost/                        # модель на основе Сatboost
-││├──  exponential_smoothing/           # модель на основе Exponential Smoothing
-││├──  fourier/                         # модель на основе разложение в ряд Фурье
-││├──  sarimax/                         # модель на основе SARIMAX
-││├──  unobsorved_components/           # модель на основе Unobsorved Components 
+││├──  catboost/                        # Модель на основе Сatboost
+││├──  exponential_smoothing/           # Модель на основе Exponential Smoothing
+││├──  fourier/                         # Модель на основе разложение в ряд Фурье
+││├──  sarimax/                         # Модель на основе SARIMAX
+││├──  unobsorved_components/           # Модель на основе Unobsorved Components 
 │├──  preprocessing/                # Модуль с инструментами для препроцессинга
 │├──  scoring/                      # Модуль с инструментами для скоринга
 │├──  transformation/               # Модуль с инструментами для преобразования данных  
