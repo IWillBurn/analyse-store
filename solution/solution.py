@@ -253,8 +253,8 @@ class Solution:
             print("fitting catboost models ...")
             for ind, (item, data) in enumerate(self.train.items()):
                 catboost = CatBoostModel(catboost_fields)
-                catboost.fit(data.drop(['store_id', 'item_id'], axis=1),
-                             self.test[item]['week'].drop(['store_id', 'item_id'], axis=1))
+                df = data.drop(['store_id', 'item_id'], axis=1)
+                catboost.fit(df.iloc[:-90:], df.iloc[-90::])
                 self.catboost_models[item] = catboost
 
     def predict(self) -> None:
